@@ -1,6 +1,4 @@
-import argparse
-import sys
-import re
+import argparse, sys, re
 
 #used to read from files
 def fileReader(filename, verbosity):
@@ -36,6 +34,7 @@ args = parser.parse_args()
 if args.verbose:
     print()
 
+#Read job and TC
 if args.jobFolder is None:
     print('No job selected')
     sys.exit(2)
@@ -58,8 +57,6 @@ else:
         print('INVALID TC PATH')
         sys.exit(1)
 
-#Read job and TC
-
 #define vars to hold info like producer, operator, job, and notes
 worder = ''
 producer = ''
@@ -71,7 +68,7 @@ notes = []
 #define lines from TC to grab frames to be checked
 lines = []
 
-#frames that need to be checked
+#frames that need to be checked. this will be returned later in the output
 frames = []
 
 #grab vars from job
@@ -160,33 +157,44 @@ else:
             s = ''
             i = 0
 
-            while i < len(num):
-                start = i
-                for k in range(i + 1, len(num)):
-                    if num[k] == num[k - 1] + 1:
-                        stop = k
-                    elif stop != -1:
-                        #there was an increment
-                        i = stop
-                        s = str(num[start]) + '-' + str(num[stop])
-                        stop = -1
-                        frames.append(locs[longest[0]] + ' / ' + s)
-                        break
-                    else:
-                        frames.append(locs[longest[0]] + ' / ' + str(num[i]))
-                        break
+            if len(num) > 1:      
 
-                    if (k == len(num) - 1) and (stop != -1):
-                        #there was an increment
-                        i = stop
-                        s = str(num[start]) + '-' + str(num[stop])
-                        frames.append(locs[longest[0]] + ' / ' + s)
-                        stop = -1
+                #iterate to get all nums in num         
+                while i < len(num):
+                    start = i
+                    for k in range(i + 1, len(num)):
+                        if num[k] == num[k - 1] + 1:
+                            stop = k
+                        elif stop != -1:
+                            #there was an increment
+                            i = stop
+                            s = str(num[start]) + '-' + str(num[stop])
+                            stop = -1
+                            frames.append(locs[longest[0]] + ' / ' + s)
+                            break
+                        else:
+                            frames.append(locs[longest[0]] + ' / ' + str(num[i]))
+                            break
 
-                i += 1
+                        if (k == len(num) - 1) and (stop != -1):
+                            #there was an increment
+                            i = stop
+                            s = str(num[start]) + '-' + str(num[stop])
+                            frames.append(locs[longest[0]] + ' / ' + s)
+                            stop = -1
 
-#frames now holds all the frames in sequence
-#print(frames)
+                    i += 1
+
+                #catch any stray frames that dont have a subsequent frame and are not in sequence
+                s = str(num[i-1])
+                if s not in frames[len(frames) - 1] and start == i - 1:
+                    frames.append(locs[longest[0]] + ' / ' + s)
+            
+            else:
+                #only one number in this set so we will add the single number
+                frames.append(locs[longest[0]] + ' / ' + str(num[0]))
+
+#frames now holds all the frames in sequence. print to file
 with open('output.txt', 'w') as f:
     f.write('Workorder ' + worder + '/' + producer + '/' + operator + '/' + job + '/')
 

@@ -23,6 +23,7 @@ Workorder 1107/Joan Jett/John Doe/Dirtfixing/Notes: Please clean files noted per
 /hpsans13/production/starwars/reel1/partA/1920x1080 / 5133
 /hpsans13/production/starwars/reel1/partA/1920x1080 / 5144
 /hpsans13/production/starwars/reel1/partA/1920x1080 / 5155
+/hpsans13/production/starwars/reel1/partA/1920x1080 / 5166
 /hpsans13/production/starwars/reel1/VFX/Framestore / 6188-6191
 /hpsans13/production/starwars/reel1/partA/1920x1080 / 6200-6201
 /hpsans13/production/starwars/reel1/partA/1920x1080 / 6209
@@ -44,8 +45,10 @@ Workorder 1107/Joan Jett/John Doe/Dirtfixing/Notes: Please clean files noted per
 /hpsans13/production/starwars/reel1/partB/1920x1080 / 6680-6684
 /hpsans14/production/starwars/reel1/VFX/AnimalLogic / 6832-6834
 /hpsans14/production/starwars/reel1/VFX/AnimalLogic / 6911-6914
+/hpsans13/production/starwars/reel1/partB/1920x1080 / 8845
 /hpsans15/production/starwars/pickups/shot_1ab/1920x1080 / 10001-10002
 /hpsans15/production/starwars/pickups/shot_1ab/1920x1080 / 10008
+/hpsans15/production/starwars/pickups/shot_1ab/1920x1080 / 11113
 /hpsans13/production/starwars/reel1/partB/1920x1080 / 12011
 /hpsans13/production/starwars/reel1/partB/1920x1080 / 12021
 /hpsans13/production/starwars/reel1/partB/1920x1080 / 12031
@@ -54,3 +57,4 @@ Workorder 1107/Joan Jett/John Doe/Dirtfixing/Notes: Please clean files noted per
 /hpsans13/production/starwars/reel1/partB/1920x1080 / 12111
 /hpsans13/production/starwars/reel1/partB/1920x1080 / 12121
 /hpsans13/production/starwars/reel1/partB/1920x1080 / 12131
+/hpsans13/production/starwars/reel1/partB/1920x1080 / 12141
