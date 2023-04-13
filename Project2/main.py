@@ -1,10 +1,9 @@
-import csv, argparse, datetime, pymongo
+import argparse, datetime, pymongo
 from getpass import getuser
 from re import split
 
-#set up db and collections
+#set up db connection and collections - outputs: client, db, and collections 1 & 2
 def dbSet():
-    #sets up client
     myclient = pymongo.MongoClient('mongodb+srv://admin:password1234@cluster0.4prujhr.mongodb.net/?retryWrites=true&w=majority')
 
     mydb = myclient['Project2']
@@ -13,14 +12,12 @@ def dbSet():
 
     framesData = mydb['framesData']
 
-    return [myclient, userData, framesData]
+    return [myclient, mydb, userData, framesData]
 
 #add data to the db in the given collection
 def addDataDB(collection, data):
     if collection.full_name == 'Project2.userData':
     
-        #userData is the collection
-
         #User that ran script - Machine - Name of User on File - Date of File - Date Submitted
         tDict = {
             'User that ran Script': data[0],
@@ -33,11 +30,7 @@ def addDataDB(collection, data):
         collection.insert_one(tDict)
     else:
 
-        #framesData is the collection
-
-        #collection 2
         #Name of user on file - Date of file - location - frame/ranges  
-
         tDict = {
             'Name of User on File': data[0],
             'Date on File': data[1],
@@ -53,15 +46,12 @@ def dateChecker(*filenames):
     #first find the date within the Xytech file to compare to the rest of the files
     date = filenames[0][len(filenames[0]) - 1][filenames[0][len(filenames[0]) - 1].rfind('_') + 1:len(filenames[0][len(filenames[0]) - 1]) - 4]
 
-    sameDate = True
-
     #once date is found check and see if the date is the same across all the files relative to the Xytech file
     for file in filenames[0]:
         if date not in file:
-            sameDate = False
-            break
+            return False
 
-    return sameDate
+    return True
 
 #lists all occurrences of the given character within a string
 def find(str, ch):
@@ -133,23 +123,57 @@ def extractFrames(str):
 
     return allFrames
 
-#define parser
+#the additional assignment for the project submission
+def dbCalls(dbStuff):
+    a1, a2, a3, a4 = [], [], [], []
+
+    for x in dbStuff[3].find({}):
+        # 1 - All work done by TDanza
+        if x['Name of User on File'] == 'TDanza':
+            a1.append(x['Frame/Ranges'])
+
+    names = []
+    # 2 - all work done before 3-25-23 on Flame
+    #find the users of flame in userData then find all work done before 3-25-23 with user's name in framesData
+    for x in dbStuff[2].find({}):
+        if x['Machine'] == 'Flame':
+            names.append(x['Name of User on File'])
+    for y in dbStuff[3].find({}):
+        if y['Date on File'] < '20230325' and y['Name of User on File'] in names:
+            a2.append(y['Frame/Ranges'])
+            
+    for x in dbStuff[3].find({}):
+        # 3 - work done on hpsans13 on 3-26-23
+        if 'hpsans13' in x['Location'] and x['Date on File'] == '20230326':
+            a3.append(x['Frame/Ranges'])
+
+    for x in dbStuff[2].find({}):
+        # 4 - name of all autodesk flame users
+        if x['Machine'] == 'Flame' and x['Name of User on File'] not in a4:
+            a4.append(x['Name of User on File'])
+
+    print(a1)
+    print(a2)
+    print(a3)
+    print(a4)
+    return
+
 parser = argparse.ArgumentParser()
 
 #arguments:
 #   files - all the baselight/flames files to be read
 #   xytech - the xytech file to be read
 #   verbose
-#   output - choose CSV or DB to output info to
+#   output - choose CSV or DB to output info
 parser.add_argument('--files', action='append', help='path to Baselight or Flames txt files for processing', nargs='+', required=True, type=argparse.FileType('r'))
 parser.add_argument('--xytech', dest='xytechPath', help='path to Xytech txt file for processing', required=True, type=argparse.FileType('r'))
 parser.add_argument('--verbose', action='store_true', help='show verbose')
 parser.add_argument('--output', choices=['CSV', 'DB'], dest='output', help='choose output to CSV or DB', required=True)
 
-#parse the args
 args = parser.parse_args()
 
 #wrap in try-catch and raise exceptions when things go awry
+dbStuff = []
 try:
     
     #files is the list of Baselight and Flame files to read data from
@@ -191,11 +215,10 @@ try:
     #check to see if baselight and flame files are given
     for file in files:    
         if ('Baselight' not in file) and ('Flame' not in file):
-            raise NameError ('WRONG FILE GIVEN AS BASELIGHT/FLAME FILE - PLEASE ENTER A PROPER FILE FOR DATA INPUT', file)
+            raise NameError ('WRONG FILE GIVEN AS BASELIGHT/FLAME FILE(S) - PLEASE ENTER A PROPER FILE FOR DATA INPUT', file)
     
-    files.append(args.xytechPath.name[args.xytechPath.name.rfind('/') + 1:])
-
     #check the dates of the given files to see if they all match
+    files.append(args.xytechPath.name[args.xytechPath.name.rfind('/') + 1:])
     if dateChecker(files):
         files.pop()
     else:
@@ -204,13 +227,13 @@ try:
     #read the frames from the given baselight/flame files
     csvFrames = []
 
-    if args.output == 'DB':
-        if args.verbose:
-            print('Setting up DataBase...')
-        dbStuff = dbSet()
-        if args.verbose:
+    if args.output == 'DB' and args.verbose:
+        print('Setting up DataBase...')
+    dbStuff = dbSet()
+    if args.output == 'DB' and args.verbose:
             print('Database Setup Complete.\nAdding to Database...')
-    elif args.verbose and args.output == 'CSV':
+    
+    if args.verbose and args.output == 'CSV':
         print('Adding to CSV...')
 
     for file in files:
@@ -223,7 +246,7 @@ try:
         #append the data to DB if needed
         if args.output == 'DB':
             mach = filename[:filename.find('_')]
-            addDataDB(dbStuff[1], [getuser(), mach, user, date, datetime.datetime.now().strftime("%d/%m/%Y")])
+            addDataDB(dbStuff[2], [getuser(), mach, user, date, datetime.datetime.now().strftime("%Y%m%d")])
 
         #open file for reading the location and frames
         with open(file) as f:
@@ -242,8 +265,7 @@ try:
                     frames = line[line.find(' ') + 1:]
 
                 else:
-                    #Flame file
-                    #find all the spaces within the location given
+                    #Flame file - find all the spaces within the location given
                     locSpace = find(line, ' ')
                     loc = line[locSpace[0] + 1:locSpace[1]]
 
@@ -259,30 +281,34 @@ try:
                 
                 #for each element within the frame, append the data to DB
                 for i in range(len(allFrames)):
-                    if args.output == 'DB':
-                        addDataDB(dbStuff[2], [user, date, loc, allFrames[i]])
-                    else:
-                        csvFrames.append([loc, allFrames[i]])
+                    for j in range(len(xytFolders)):
+                        if loc in xytFolders[j]:
+                            if args.output == 'DB':
+                                addDataDB(dbStuff[3], [user, date, loc, allFrames[i]])
+                            else:
+                                csvFrames.append([loc, allFrames[i]])
 
     if args.output == 'CSV':
-        #write to the csv file
-        with open('output.csv', 'w', newline='') as csvfile:
-            csvWritr = csv.writer(csvfile, delimiter=' ')
+        
+        #write to the output file
+        with open('output.txt', 'w') as outputFile:
             for d in csvData:
-                csvWritr.writerow([d])
-            
-            csvWritr.writerow('\n' * 2)
+                outputFile.write(d.rstrip('\n') + ' / ')
+
+            outputFile.write('\n' * 3)
 
             for d in csvFrames:
                 for i in range(len(xytFolders)):
                     if d[0] in xytFolders[i]:
-                        csvWritr.writerow([xytFolders[i]] + [d[1]])
-                        break
+                        outputFile.write(xytFolders[i] + ' / ' + d[1] + '\n')
+
         if args.verbose:
-            print('Finished writing to CSV -- See \'output.csv\'')
+            print('Finished writing to CSV -- See \'output.txt\'')
 
     elif args.verbose and args.output == 'DB':
         print('Finished Adding data to DB')
-
+        
 except Exception as e:
     raise e
+
+dbCalls(dbSet())

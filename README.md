@@ -11,7 +11,7 @@ The
 ## Projects
 
 1) Import txt files and parse through retrieving the filepath that exists in both as well as frames that correspond to the matching path
-2) ???
+2) Import txt files and parse through retrieving parts of data from the files and filenames themselves to add to either a DB or a CSV file
 3) ???
 
 ## Lessons
@@ -19,5 +19,9 @@ The
 1) 20 random numbers in an array
 2) Read a file and output the file's contents with all vowels replaced with '9'
 3) Every second check for a new file within the directory titled 'week3' that exists within the directory containing all the lessons. Once a new file is found display info about the file and current time.
-4) ???
-5) ???
+4) Removes space from improper filenames and indicates those that needed correcting and those that did not
+5) Mongo DB Database Tutorial. See -- https://www.w3schools.com/python/python_mongodb_getstarted.asp -- Get Started, Create Database, Create Collections, Insert and print to consoe the output from all 4 sections
+6) Argparse script with verbose option that displays each line from file. Always displays total lines from end of file.
+7) Script that takes a frame and turns it into a working timecode at 24 fps. Eg. to be used are 35, 1569, 14000. Also takes a single user input!
+8) ???
+9) ???
