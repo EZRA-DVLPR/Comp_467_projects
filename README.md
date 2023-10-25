@@ -25,4 +25,3 @@ The
 7) Script that takes a frame and turns it into a working timecode at 24 fps. Eg. to be used are 35, 1569, 14000. Also takes a single user input!
 8) calls 'ls -l' command on a folder and reutnrs the file with the largest file size as well as its name.
 9) Imports a video file and will change resolution of given video strem. Also changes the audio stream to be echoed. Outputs these altered streams into a single new video in an alternate format (webm) instead of the the given (mp4)
-10) ???
